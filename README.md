@@ -8,8 +8,9 @@
 
 - **Hyprland**: `hyprland.lua` + `modules/` — отступы/рамки, быстрые popin-анимации,
   автозапуск, правила окон. Никаких `.conf`.
-- **Обои**: mpvpaper берёт самый свежий файл из `~/Pictures/Wallpapers`
-  (mp4 / webm / mkv / mov / gif / png / jpg / webp; при равном mtime приоритет у видео).
+- **Обои**: mpvpaper + wallust; `SUPER+SHIFT+W` переключает файлы по кругу,
+  (mp4 / webm / mkv / mov / gif / png / jpg / jpeg / webp), выбор запоминается
+  между запусками.
 - **wallust**: кадр из обоев → палитра →
   - kitty (`~/.config/kitty/wallust.conf`)
   - zsh (`~/.config/zsh/wallust-colors.zsh` + precmd-хук)
@@ -68,10 +69,13 @@ xdg-mime default thunar.desktop inode/directory
 
 ## Обои и цвета
 
-- Кидай файлы в `~/Pictures/Wallpapers` — перезапуск `wal-set.sh` подхватит самый свежий.
+- Кидай файлы в `~/Pictures/Wallpapers` (или `~/Videos`).
+- `SUPER+SHIFT+W` — следующий файл по имени, по кругу; выбранный файл
+  запоминается в `~/.cache/wal-set/last`, после перезагрузки остаются те же обои.
+- Режимы вручную: `wal-set.sh --next` (по очереди), `--random` (случайный),
+  `--last` (последний, по умолчанию), `--newest` (самый свежий).
 - Переопределения: `WALLPAPER_FILE=/путь/файл` (конкретный файл),
   `WALLPAPER_DIR=/путь/папка` (другая папка).
-- Обновить вручную: `SUPER+SHIFT+W` (или `~/.local/bin/wal-set.sh`).
 - Настройки палитры: `~/.config/wallust/wallust.toml`, шаблоны в `templates/`.
 - Цвета рамок генерируются в `modules/colors.lua`; если файла нет —
   `settings.lua` использует дефолтный градиент.
@@ -96,7 +100,7 @@ xdg-mime default thunar.desktop inode/directory
 | `SUPER+колесо` | соседний workspace |
 | `Print` | скриншот области (в файл и буфер) |
 | `SUPER+Print` | скриншот всего экрана |
-| `SUPER+SHIFT+W` | обновить обои и палитру |
+| `SUPER+SHIFT+W` | следующие обои по очереди (и палитра) |
 | `XF86Audio*` | громкость (wpctl), mic mute, playerctl |
 | `XF86MonBrightness*` | яркость (brightnessctl) |
 

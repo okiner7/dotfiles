@@ -27,8 +27,8 @@ hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
 hl.bind("Print", hl.dsp.exec_cmd("$HOME/.local/bin/screenshot.sh region"))
 hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("$HOME/.local/bin/screenshot.sh full"))
 
--- Перезапустить видео-обои и палитру wallust (kitty, zsh, GTK, рамки).
-hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("$HOME/.local/bin/wal-set.sh"))
+-- Следующие обои по очереди + палитра wallust (kitty, zsh, GTK, рамки).
+hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("$HOME/.local/bin/wal-set.sh --next"))
 
 -- Фокус стрелками.
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))

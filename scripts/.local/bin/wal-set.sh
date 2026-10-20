@@ -2,8 +2,15 @@
 # Видео-обои через mpvpaper + палитра wallust для kitty, zsh, GTK и рамок Hyprland.
 #
 # Куда кидать обои:
-#   ~/Pictures/Wallpapers — берётся самый свежий файл
-#   (mp4 / webm / mkv / mov / gif / png / jpg / jpeg / webp).
+#   ~/Pictures/Wallpapers (mp4 / webm / mkv / mov / gif / png / jpg / jpeg / webp).
+#
+# Режимы выбора (аргумент):
+#   --next    следующий файл по имени, по кругу (бинт SUPER+SHIFT+W)
+#   --random  случайный файл, не совпадающий с текущим
+#   --last    продолжить с последнего выбранного (по умолчанию, автозапуск)
+#   --newest  самый свежий файл по mtime (старое поведение)
+# Выбранный файл запоминается в ~/.cache/wal-set/last.
+#
 # Переопределения:
 #   WALLPAPER_FILE — конкретный файл (приоритет над папкой).
 #   WALLPAPER_DIR  — другая папка обоев.
@@ -17,6 +24,21 @@ LOG_FILE="$CACHE_DIR/wal-set.log"
 LOCK_FILE="$CACHE_DIR/wal-set.lock"
 WALLPAPER_DIR="${WALLPAPER_DIR:-$HOME_DIR/Pictures/Wallpapers}"
 FRAME="$CACHE_DIR/frame.png"
+STATE_FILE="$CACHE_DIR/last"
+PICK_MODE="last"
+
+# Режим выбора обоев: аргумент командной строки (по умолчанию — last).
+case "${1:-}" in
+    --next|next)     PICK_MODE="next" ;;
+    --random|random) PICK_MODE="random" ;;
+    --newest|newest) PICK_MODE="newest" ;;
+    --last|last|"")  PICK_MODE="last" ;;
+    *)
+        printf 'Неизвестный аргумент: %s\n' "$1" >&2
+        printf 'Использование: %s [--next|--random|--last|--newest]\n' "$0" >&2
+        exit 2
+        ;;
+esac
 
 mkdir -p "$CACHE_DIR" "$CONFIG_DIR/kitty" "$CONFIG_DIR/zsh"
 
@@ -43,8 +65,46 @@ is_image() {
     esac
 }
 
+# Все подходящие файлы обоев (без сортировки).
+list_media() {
+    local dirs=("$WALLPAPER_DIR")
+    [[ -d "$HOME_DIR/Videos" ]] && dirs+=("$HOME_DIR/Videos")
+
+    find "${dirs[@]}" -maxdepth 2 -type f \
+        \( -iname '*.mp4' -o -iname '*.webm' -o -iname '*.mkv' -o -iname '*.mov' -o -iname '*.gif' \
+        -o -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) \
+        -print 2>/dev/null
+}
+
 # Самый свежий файл; при равном времени видео приоритетнее картинки.
-find_media() {
+find_media_newest() {
+    local path stamp key best="" best_key=""
+    while IFS= read -r path; do
+        [[ -n "$path" ]] || continue
+        stamp="$(stat -c '%Y' "$path" 2>/dev/null || echo 0)"
+        case "${path,,}" in
+            *.mp4|*.webm|*.mkv|*.mov|*.gif) key="$stamp 1" ;;
+            *) key="$stamp 0" ;;
+        esac
+        if [[ -z "$best_key" || "$key" > "$best_key" ]]; then
+            best_key="$key"
+            best="$path"
+        fi
+    done < <(list_media)
+    [[ -n "$best" ]] && printf '%s\n' "$best"
+}
+
+# Последний выбранный файл (если он ещё существует).
+read_state() {
+    [[ -f "$STATE_FILE" ]] || return 1
+    local f
+    IFS= read -r f < "$STATE_FILE" || return 1
+    [[ -n "$f" && -f "$f" ]] || return 1
+    printf '%s\n' "$f"
+}
+
+# Выбрать обои согласно режиму (см. шапку скрипта).
+pick_media() {
     local f
     for f in "${WALLPAPER_FILE:-}" "${WALLPAPER_VIDEO:-}"; do
         if [[ -n "$f" && -f "$f" ]]; then
@@ -53,37 +113,71 @@ find_media() {
         fi
     done
 
-    local dirs=("$WALLPAPER_DIR")
-    [[ -d "$HOME_DIR/Videos" ]] && dirs+=("$HOME_DIR/Videos")
+    local last
+    last="$(read_state || true)"
 
-    local found
-    found="$(find "${dirs[@]}" -maxdepth 2 -type f \
-        \( -iname '*.mp4' -o -iname '*.webm' -o -iname '*.mkv' -o -iname '*.mov' -o -iname '*.gif' \
-        -o -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.webp' \) \
-        -printf '%T@ %p\n' 2>/dev/null | python3 -c '
-import sys
-best = None
-for line in sys.stdin:
-    line = line.rstrip("\n")
-    if not line:
-        continue
-    stamp, _, path = line.partition(" ")
-    try:
-        stamp = float(stamp)
-    except ValueError:
-        continue
-    low = path.lower()
-    pri = 1 if low.endswith((".mp4", ".webm", ".mkv", ".mov", ".gif")) else 0
-    key = (stamp, pri)
-    if best is None or key > best[0]:
-        best = (key, path)
-if best:
-    print(best[1])
-')"
-    if [[ -n "$found" ]]; then
-        printf '%s\n' "$found"
-        return 0
-    fi
+    case "$PICK_MODE" in
+        newest)
+            find_media_newest
+            return
+            ;;
+        last)
+            if [[ -n "$last" ]]; then
+                printf '%s\n' "$last"
+                return 0
+            fi
+            find_media_newest
+            return
+            ;;
+        next)
+            local list=() path i idx=0
+            while IFS= read -r path; do
+                [[ -n "$path" ]] && list+=("$path")
+            done < <(list_media | LC_ALL=C sort)
+            ((${#list[@]})) || return 1
+
+            if [[ -n "$last" ]]; then
+                for i in "${!list[@]}"; do
+                    if [[ "${list[$i]}" == "$last" ]]; then
+                        idx=$(( (i + 1) % ${#list[@]} ))
+                        break
+                    fi
+                done
+            fi
+            printf '%s\n' "${list[$idx]}"
+            return 0
+            ;;
+        random)
+            local list=() path pick="" tries=0
+            while IFS= read -r path; do
+                [[ -n "$path" ]] && list+=("$path")
+            done < <(list_media | LC_ALL=C sort)
+            ((${#list[@]})) || return 1
+
+            if ((${#list[@]} == 1)); then
+                printf '%s\n' "${list[0]}"
+                return 0
+            fi
+
+            while ((tries < 20)); do
+                if command -v shuf >/dev/null 2>&1; then
+                    pick="$(printf '%s\n' "${list[@]}" | shuf -n 1)"
+                else
+                    pick="${list[RANDOM % ${#list[@]}]}"
+                fi
+                [[ "$pick" != "$last" ]] && break
+                tries=$((tries + 1))
+            done
+            if [[ -z "$pick" || "$pick" == "$last" ]]; then
+                for path in "${list[@]}"; do
+                    [[ "$path" != "$last" ]] && { pick="$path"; break; }
+                done
+            fi
+            printf '%s\n' "$pick"
+            return 0
+            ;;
+    esac
+
     return 1
 }
 
@@ -154,7 +248,7 @@ start_mpvpaper() {
 
 kill_backends
 
-media="$(find_media || true)"
+media="$(pick_media || true)"
 
 if [[ -z "$media" ]]; then
     log "обои не найдены — кинь файл в $WALLPAPER_DIR"
@@ -162,7 +256,8 @@ if [[ -z "$media" ]]; then
     exit 0
 fi
 
-log "обои: $media"
+log "режим: $PICK_MODE, обои: $media"
+printf '%s\n' "$media" > "$STATE_FILE.tmp" && mv -f "$STATE_FILE.tmp" "$STATE_FILE"
 
 palette_source=""
 if is_image "$media"; then
