@@ -17,6 +17,10 @@ hl.bind(mainMod .. " + M",      hl.dsp.exec_cmd("command -v hyprshutdown >/dev/n
 -- Окна
 hl.bind(mainMod .. " + C", hl.dsp.window.close())
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+
+-- Все окна активного воркспейса: плавающий режим / тайлинг.
+hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("$HOME/.local/bin/layout-toggle.sh"))
+
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())

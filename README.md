@@ -99,6 +99,7 @@ xdg-mime default thunar.desktop inode/directory
 | `SUPER+M` | завершение сессии (hyprshutdown / hyprctl exit) |
 | `SUPER+C` | закрыть окно |
 | `SUPER+V` | плавающее окно |
+| `SUPER+SPACE` | все окна воркспейса: плавающий режим / тайлинг |
 | `SUPER+P` | pseudo-tile |
 | `SUPER+J` | togglesplit |
 | `SUPER+F` | fullscreen |
@@ -124,7 +125,7 @@ kitty/.config/kitty/      kitty.conf (include wallust-цветов)
 wallust/.config/wallust/  wallust.toml + templates/ (kitty, zsh, gtk, hypr colors)
 gtk/.config/gtk-3.0/      settings.ini (gtk.css генерируется)
 zsh/.config/zsh/          wallust.zsh — подключение цветов + precmd
-scripts/.local/bin/       wal-set.sh, screenshot.sh, clipboard-watch.sh
+scripts/.local/bin/       wal-set.sh, layout-toggle.sh, screenshot.sh, clipboard-watch.sh
 assets/                   скриншоты для README
 ```
 
