@@ -8,4 +8,7 @@ hl.on("hyprland.start", function()
 
     -- Видео-обои, палитра wallust, цвета GTK и рамок Hyprland.
     hl.exec_cmd("$HOME/.local/bin/wal-set.sh")
+
+    -- Quickshell: лаунчер и будущий UI.
+    hl.exec_cmd("qs -n -d")
 end)

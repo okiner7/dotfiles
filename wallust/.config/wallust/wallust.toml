@@ -14,6 +14,7 @@ kitty = { template = 'kitty.conf',      target = '~/.config/kitty/wallust.conf' 
 zsh   = { template = 'zsh-colors.zsh',  target = '~/.config/zsh/wallust-colors.zsh' }
 gtk   = { template = 'gtk.css',         target = '~/.config/gtk-3.0/gtk.css' }
 hypr  = { template = 'colors.lua',      target = '~/.config/hypr/modules/colors.lua' }
+quickshell = { template = 'quickshell.json', target = '~/.config/quickshell/colors.json' }
 
 [hooks]
 # Перечитать конфиг во всех запущенных Kitty.

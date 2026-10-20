@@ -8,7 +8,7 @@ set -u
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STAMP="$(date '+%Y%m%d-%H%M%S')"
-PACKAGES=(hypr kitty wallust gtk zsh scripts)
+PACKAGES=(hypr kitty wallust gtk zsh scripts quickshell)
 
 # Эти файлы генерирует wallust: в ~ они должны быть обычными файлами, не симлинками.
 SKIP_FILES=(
@@ -16,6 +16,7 @@ SKIP_FILES=(
     "kitty/.config/kitty/wallust.conf"
     "gtk/.config/gtk-3.0/gtk.css"
     "zsh/.config/zsh/wallust-colors.zsh"
+    "quickshell/.config/quickshell/colors.json"
 )
 
 info() { printf '[install] %s\n' "$*"; }
@@ -78,13 +79,13 @@ find "$REPO_DIR/scripts" -type f -name '*.sh' -exec chmod +x {} + 2>/dev/null ||
 
 printf '\n'
 MISSING=()
-for bin in Hyprland hyprctl kitty wallust mpvpaper mpv ffmpeg python3 wl-copy wl-paste cliphist grim slurp thunar; do
+for bin in Hyprland hyprctl kitty wallust mpvpaper mpv ffmpeg python3 wl-copy wl-paste cliphist grim slurp thunar qs; do
     command -v "$bin" >/dev/null 2>&1 || MISSING+=("$bin")
 done
 if ((${#MISSING[@]})); then
     info "не найдены команды: ${MISSING[*]}"
     info "поставь из репозиториев (mpvpaper и wallust могут быть в AUR):"
-    info "  sudo pacman -S hyprland kitty mpv ffmpeg python wl-clipboard cliphist thunar grim slurp"
+    info "  sudo pacman -S hyprland kitty mpv ffmpeg python wl-clipboard cliphist thunar grim slurp quickshell"
 else
     info "все зависимости на месте"
 fi

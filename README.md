@@ -17,6 +17,8 @@
   - zsh (цвета в `~/.config/zsh/wallust-colors.zsh`, промпт в `prompt.zsh`)
   - GTK/Thunar (`~/.config/gtk-3.0/gtk.css`)
   - рамки Hyprland (`~/.config/hypr/modules/colors.lua`)
+- **Quickshell**: лаунчер на QML, цвета из палитры wallust, `SUPER+R`.
+  Дальше на нём же планируются бар, OSD, уведомления и power menu.
 - **Скриншоты**: `Print` — область, `SUPER+Print` — весь экран;
   файл в `~/Pictures/Screenshots/` + сразу в буфер.
 - **Буфер обмена**: cliphist, watcher'ы текста и картинок в автозапуске.
@@ -34,18 +36,17 @@
 
 ```
 sudo pacman -S hyprland kitty mpv ffmpeg python wl-clipboard cliphist \
-    thunar gvfs tumbler grim slurp
+    thunar gvfs tumbler grim slurp quickshell
 ```
 
 Из AUR: `mpvpaper`, `wallust`.
 
 Опционально:
 
-- `hyprshutdown` — меню завершения по `SUPER+M` (без него просто выходит из Hyprland)
-- `hyprlauncher` — лаунчер по `SUPER+R`
 - `brightnessctl` — клавиши яркости
 - `playerctl` — мультимедиа-клавиши
-- `xdg-desktop-portal-hyprland` — порталы (скриншоты в браузерах и т.п.)
+- `xdg-desktop-portal-hyprland`, `xdg-desktop-portal-gtk` — порталы
+  (файловые диалоги, шаринг экрана, скриншоты в браузерах)
 
 ## Установка
 
@@ -95,8 +96,8 @@ xdg-mime default thunar.desktop inode/directory
 | --- | --- |
 | `SUPER+Return`, `SUPER+Q` | kitty |
 | `SUPER+E` | Thunar |
-| `SUPER+R` | hyprlauncher (опционально) |
-| `SUPER+M` | завершение сессии (hyprshutdown / hyprctl exit) |
+| `SUPER+R` | лаунчер Quickshell |
+| `SUPER+M` | выход из Hyprland (позже — power menu Quickshell) |
 | `SUPER+C` | закрыть окно |
 | `SUPER+V` | плавающее окно |
 | `SUPER+SPACE` | все окна воркспейса: плавающий режим / тайлинг |
@@ -122,9 +123,10 @@ xdg-mime default thunar.desktop inode/directory
 ```
 hypr/.config/hypr/        конфиг Hyprland (hyprland.lua + modules/)
 kitty/.config/kitty/      kitty.conf (include wallust-цветов)
-wallust/.config/wallust/  wallust.toml + templates/ (kitty, zsh, gtk, hypr colors)
+wallust/.config/wallust/  wallust.toml + templates/ (kitty, zsh, gtk, hypr, quickshell)
 gtk/.config/gtk-3.0/      settings.ini (gtk.css генерируется)
 zsh/.config/zsh/          wallust.zsh — подключение цветов + precmd
+quickshell/.config/quickshell/  shell.qml + launcher/ (QML-лаунчер)
 scripts/.local/bin/       wal-set.sh, layout-toggle.sh, screenshot.sh, clipboard-watch.sh
 assets/                   скриншоты для README
 ```

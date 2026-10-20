@@ -3,7 +3,6 @@
 
 local terminal    = "kitty"
 local fileManager = "thunar"
-local menu        = "hyprlauncher"
 
 local mainMod = "SUPER"
 
@@ -11,8 +10,9 @@ local mainMod = "SUPER"
 hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + Q",      hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + E",      hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + R",      hl.dsp.exec_cmd(menu))
-hl.bind(mainMod .. " + M",      hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
+-- Лаунчер на Quickshell (IPC-команда toggle).
+hl.bind(mainMod .. " + R",      hl.dsp.exec_cmd("qs ipc call launcher toggle"))
+hl.bind(mainMod .. " + M",      hl.dsp.exit())
 
 -- Окна
 hl.bind(mainMod .. " + C", hl.dsp.window.close())
