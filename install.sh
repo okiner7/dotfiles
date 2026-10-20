@@ -53,6 +53,27 @@ for pkg in "${PACKAGES[@]}"; do
     done < <(find "$REPO_DIR/$pkg" -type f -print0)
 done
 
+# zsh-плагины автодополнения: в custom/plugins, без пакетов и sudo.
+if [[ -d "$HOME/.oh-my-zsh" ]]; then
+    OMZ_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+    ZSH_PLUGINS=(
+        "zsh-autosuggestions|https://github.com/zsh-users/zsh-autosuggestions"
+        "zsh-syntax-highlighting|https://github.com/zsh-users/zsh-syntax-highlighting"
+        "zsh-completions|https://github.com/zsh-users/zsh-completions"
+    )
+    for entry in "${ZSH_PLUGINS[@]}"; do
+        name="${entry%%|*}"
+        url="${entry#*|}"
+        if [[ -d "$OMZ_CUSTOM/plugins/$name" ]]; then
+            info "плагин уже есть: $name"
+        elif git clone --depth=1 "$url" "$OMZ_CUSTOM/plugins/$name" >/dev/null 2>&1; then
+            info "плагин установлен: $name"
+        else
+            info "не удалось установить плагин: $name (проверь сеть)"
+        fi
+    done
+fi
+
 find "$REPO_DIR/scripts" -type f -name '*.sh' -exec chmod +x {} + 2>/dev/null || true
 
 printf '\n'

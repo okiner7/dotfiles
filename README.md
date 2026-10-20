@@ -19,6 +19,8 @@
 - **Скриншоты**: `Print` — область, `SUPER+Print` — весь экран;
   файл в `~/Pictures/Screenshots/` + сразу в буфер.
 - **Буфер обмена**: cliphist, watcher'ы текста и картинок в автозапуске.
+- **zsh**: промпт на палитре обоев, автоподсказки из истории, подсветка
+  синтаксиса и расширенные Tab-дополнения.
 - **Thunar**: тёмная Adwaita + цвета из обоев.
 
 Скриншот для README положи в `assets/screenshot.png` и раскомментируй строку:
@@ -53,15 +55,19 @@ cd ~/dotfiles
 ```
 
 `install.sh` делает по одному симлинку на файл в `$HOME`, живые файлы не затирает
-(уводит в `*.bak.<дата>`), выдаёт `+x` скриптам и проверяет зависимости.
+(уводит в `*.bak.<дата>`), выдаёт `+x` скриптам, ставит zsh-плагины
+автодополнения и проверяет зависимости.
 Генерируемые файлы (`colors.lua`, `gtk.css`, `wallust.conf`, `wallust-colors.zsh`)
 не линкуются — их создаёт wallust.
 
 Дополнительно:
 
 ```bash
-# zsh: подключить цвета
+# zsh: подключить цвета и промпт
 echo '[[ -r "$HOME/.config/zsh/wallust.zsh" ]] && source "$HOME/.config/zsh/wallust.zsh"' >> ~/.zshrc
+
+# zsh: плагины автодополнения (install.sh клонирует их сам)
+# в ~/.zshrc: plugins=(git zsh-completions zsh-autosuggestions zsh-syntax-highlighting)
 
 # Thunar как файловый менеджер по умолчанию для папок
 xdg-mime default thunar.desktop inode/directory
