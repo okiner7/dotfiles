@@ -14,3 +14,9 @@ _wallust_reload_colors() {
 if command -v add-zsh-hook >/dev/null 2>&1; then
     add-zsh-hook precmd _wallust_reload_colors
 fi
+
+# Промпт на цветах обоев (только для интерактивного shell).
+# Источнится после хука перезагрузки цветов, поэтому промпт всегда свежий.
+if [[ -o interactive && -r "$HOME/.config/zsh/prompt.zsh" ]]; then
+    source "$HOME/.config/zsh/prompt.zsh"
+fi

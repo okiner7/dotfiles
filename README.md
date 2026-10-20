@@ -13,7 +13,7 @@
   между запусками.
 - **wallust**: кадр из обоев → палитра →
   - kitty (`~/.config/kitty/wallust.conf`)
-  - zsh (`~/.config/zsh/wallust-colors.zsh` + precmd-хук)
+  - zsh (цвета в `~/.config/zsh/wallust-colors.zsh`, промпт в `prompt.zsh`)
   - GTK/Thunar (`~/.config/gtk-3.0/gtk.css`)
   - рамки Hyprland (`~/.config/hypr/modules/colors.lua`)
 - **Скриншоты**: `Print` — область, `SUPER+Print` — весь экран;
@@ -74,6 +74,8 @@ xdg-mime default thunar.desktop inode/directory
   запоминается в `~/.cache/wal-set/last`, после перезагрузки остаются те же обои.
 - Режимы вручную: `wal-set.sh --next` (по очереди), `--random` (случайный),
   `--last` (последний, по умолчанию), `--newest` (самый свежий).
+- Промпт zsh собирается из палитры перед каждой командой: путь, git-ветка
+  и код ошибки последней команды.
 - Переопределения: `WALLPAPER_FILE=/путь/файл` (конкретный файл),
   `WALLPAPER_DIR=/путь/папка` (другая папка).
 - Настройки палитры: `~/.config/wallust/wallust.toml`, шаблоны в `templates/`.
