@@ -1,0 +1,9 @@
+# Бэкапы, которые создаёт install.sh
+*.bak
+*.bak.*
+
+# Файлы, которые генерирует wallust (в репе им не место)
+/hypr/.config/hypr/modules/colors.lua
+/kitty/.config/kitty/wallust.conf
+/gtk/.config/gtk-3.0/gtk.css
+/zsh/.config/zsh/wallust-colors.zsh
