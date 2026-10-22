@@ -1,14 +1,10 @@
 -- Правила для layer-поверхностей (бары, лаунчеры, обои).
 
--- Лаунчер Quickshell: размытие фона под карточкой.
--- background-блюр делает сам Hyprland — в QML достаточно полупрозрачной заливки,
--- участки с малым alpha (края и волоски) остаются резкими.
-hl.layer_rule({
-    name = "quickshell-launcher-glass",
-    match = { namespace = "quickshell-launcher" },
-
-    blur = true,
-    ignore_alpha = 0.08,
-})
+-- Размытие фона под окнами Quickshell (лаунчер, бар, OSD, уведомления)
+-- делается не здесь, а через протокол ext-background-effect-v1:
+-- QML отдаёт композитору точный Region, и Hyprland размывает только его.
+-- Так размытие не выходит за края плиты.
+--
+-- Слой лаунчера: namespace "quickshell-launcher".
 
 -- Дальше сюда добавятся правила для бара, OSD и уведомлений Quickshell.

@@ -90,6 +90,25 @@ xdg-mime default thunar.desktop inode/directory
 - Цвета рамок генерируются в `modules/colors.lua`; если файла нет —
   `settings.lua` использует дефолтный градиент.
 
+## Стекло
+
+Внешний вид стеклянных панелей Quickshell (лаунчер; дальше — бар, OSD,
+уведомления, power menu) настраивается в одном файле:
+`quickshell/.config/quickshell/GlassConfig.qml`.
+
+- `radius`, `borderWidth` — скругление и толщина рамки;
+- `glassAlpha`, `topAlpha`, `bodyAlpha`, `baseAlpha` — прозрачность заливки;
+- `specular`, `borderAlpha`, `accentAlpha` — блик, рамка и подмес цвета обоев;
+- `shadowOpacity`, `shadowBlur`, `shadowOffset` — тень под плитой;
+- `blurEnabled`, `blurRadius` — размытие фона под плитой.
+
+Размытие рисует Hyprland по протоколу `ext-background-effect-v1`: QML отдаёт
+композитору точный `Region`, поэтому размытие обрезано по силуэту плиты и не
+выходит за края. Сила размытия — на стороне композитора, в
+`modules/settings.lua`: `decoration:blur:size`, `passes`, `vibrancy`.
+
+Применение: QML — `qs kill && qs -n -d`, Hyprland — `hyprctl reload`.
+
 ## Клавиши
 
 | Клавиши | Действие |
@@ -126,7 +145,7 @@ kitty/.config/kitty/      kitty.conf (include wallust-цветов)
 wallust/.config/wallust/  wallust.toml + templates/ (kitty, zsh, gtk, hypr, quickshell)
 gtk/.config/gtk-3.0/      settings.ini (gtk.css генерируется)
 zsh/.config/zsh/          wallust.zsh — подключение цветов + precmd
-quickshell/.config/quickshell/  shell.qml + launcher/ (QML-лаунчер)
+quickshell/.config/quickshell/  shell.qml, GlassConfig.qml + launcher/ (QML-лаунчер)
 scripts/.local/bin/       wal-set.sh, layout-toggle.sh, screenshot.sh, clipboard-watch.sh
 assets/                   скриншоты для README
 ```

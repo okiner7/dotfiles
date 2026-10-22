@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Wayland
+import qs
 
 // Лаунчер: полноэкранный прозрачный слой, по центру стеклянная карточка с поиском.
 PanelWindow {
@@ -23,6 +24,18 @@ PanelWindow {
     WlrLayershell.namespace: "quickshell-launcher"
     // Exclusive задаём постоянно: при показе слой сразу забирает клавиатуру.
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+
+    // Размытие фона под карточкой. Композитор (Hyprland) размывает только
+    // указанный регион, поэтому размытие не выходит за края плиты.
+    BackgroundEffect.blurRegion: GlassConfig.blurEnabled ? cardBlurRegion : null
+
+    Region {
+        id: cardBlurRegion
+
+        // Регион следует за карточкой: меняет размер вместе с ней.
+        item: card
+        radius: GlassConfig.blurRadius
+    }
 
     property string query: ""
     property var entries: []
@@ -172,7 +185,6 @@ PanelWindow {
             94 + Math.max(1, Math.min(launcher.entries.length, 8)) * 48
                 + (Math.max(1, Math.min(launcher.entries.length, 8)) - 1) * 6
         )
-        radius: 28
 
         background: launcher.theme.background
         foreground: launcher.theme.foreground

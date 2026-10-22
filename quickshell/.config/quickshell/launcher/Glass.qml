@@ -1,9 +1,14 @@
 import QtQuick
 import QtQuick.Effects
+import qs
 
-// Стеклянная плита: backdrop-блюр обеспечивает Hyprland (layer_rule c blur),
-// здесь только геометрия, блик, обводка и тень. Переиспользуется баром,
-// OSD, уведомлениями и power menu.
+// Стеклянная плита: размытие фона обеспечивает Hyprland по протоколу
+// ext-background-effect-v1 (см. Region в Launcher.qml), здесь только
+// геометрия, блик, обводка и тень. Переиспользуется баром, OSD,
+// уведомлениями и power menu.
+//
+// Все параметры по умолчанию берутся из глобальных настроек
+// GlassConfig.qml — их можно переопределить у конкретного элемента.
 Item {
     id: glass
 
@@ -15,12 +20,12 @@ Item {
     property color accent: "#7aa2f7"
 
     // Параметры стекла, чтобы тюнить вид без правок логики.
-    property alias radius: body.radius
-    property real glassAlpha: 1.0     // общий множитель прозрачности заливки
-    property real specular:   1.0     // сила верхнего блика
-    property real shadowOpacity: 0.45 // насыщенность тени
-    property real shadowBlur: 30      // радиус размытия тени
-    property real shadowOffset: 10    // сдвиг тени вниз
+    property int radius: GlassConfig.radius
+    property real glassAlpha: GlassConfig.glassAlpha
+    property real specular: GlassConfig.specular
+    property real shadowOpacity: GlassConfig.shadowOpacity
+    property real shadowBlur: GlassConfig.shadowBlur
+    property real shadowOffset: GlassConfig.shadowOffset
 
     // Мягкая тень под стеклом.
     RectangularShadow {
@@ -42,7 +47,7 @@ Item {
         id: body
 
         anchors.fill: parent
-        radius: 28
+        radius: glass.radius
         // clip здесь давал только прямоугольную обрезку: декоративные слои
         // вылезали за скруглённый силуэт угла. Поэтому каждый слой ниже сам
         // скруглён и клиппить их не нужно.
@@ -53,17 +58,17 @@ Item {
             GradientStop {
                 position: 0.0
                 color: Qt.rgba(glass.foreground.r, glass.foreground.g, glass.foreground.b,
-                               0.16 * glass.glassAlpha)
+                               GlassConfig.topAlpha * glass.glassAlpha)
             }
             GradientStop {
                 position: 0.45
                 color: Qt.rgba(glass.foreground.r, glass.foreground.g, glass.foreground.b,
-                               0.07 * glass.glassAlpha)
+                               GlassConfig.bodyAlpha * glass.glassAlpha)
             }
             GradientStop {
                 position: 1.0
                 color: Qt.rgba(glass.background.r, glass.background.g, glass.background.b,
-                               0.50 * glass.glassAlpha)
+                               GlassConfig.baseAlpha * glass.glassAlpha)
             }
         }
 
@@ -125,7 +130,7 @@ Item {
                 GradientStop {
                     position: 1.0
                     color: Qt.rgba(glass.accent.r, glass.accent.g, glass.accent.b,
-                                   0.10 * glass.specular)
+                                   GlassConfig.accentAlpha * glass.specular)
                 }
             }
         }
@@ -135,8 +140,9 @@ Item {
             anchors.fill: parent
             radius: body.radius
             color: "transparent"
-            border.width: 1
-            border.color: Qt.rgba(glass.foreground.r, glass.foreground.g, glass.foreground.b, 0.16)
+            border.width: GlassConfig.borderWidth
+            border.color: Qt.rgba(glass.foreground.r, glass.foreground.g, glass.foreground.b,
+                                  GlassConfig.borderAlpha)
         }
     }
 
