@@ -9,6 +9,7 @@
 --   animations  — кривые и анимации
 --   keybinds    — привязки клавиш
 --   rules       — правила окон
+--   layerrules  — правила layer-поверхностей (блюр слоя лаунчера)
 --   autostart   — cliphist и wal-set
 
 require("modules.env")
@@ -18,4 +19,5 @@ require("modules.settings")
 require("modules.animations")
 require("modules.keybinds")
 require("modules.rules")
+require("modules.layerrules")
 require("modules.autostart")
