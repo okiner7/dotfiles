@@ -1,11 +1,19 @@
+//@ pragma IconTheme Adwaita
+
 import Quickshell
 import Quickshell.Io
+import "bar"
 import "launcher"
 
-// Корневой конфиг Quickshell: пока только лаунчер.
+// Корневой конфиг Quickshell: бар и лаунчер.
 ShellRoot {
     Theme {
         id: theme
+    }
+
+    Bar {
+        id: bar
+        theme: theme
     }
 
     Launcher {

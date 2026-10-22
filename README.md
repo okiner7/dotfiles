@@ -17,8 +17,8 @@
   - zsh (цвета в `~/.config/zsh/wallust-colors.zsh`, промпт в `prompt.zsh`)
   - GTK/Thunar (`~/.config/gtk-3.0/gtk.css`)
   - рамки Hyprland (`~/.config/hypr/modules/colors.lua`)
-- **Quickshell**: лаунчер на QML, цвета из палитры wallust, `SUPER+R`.
-  Дальше на нём же планируются бар, OSD, уведомления и power menu.
+- **Quickshell**: бар и лаунчер на QML, цвета из палитры wallust, `SUPER+R`.
+  Дальше на нём же планируются OSD, уведомления и power menu.
 - **Скриншоты**: `Print` — область, `SUPER+Print` — весь экран;
   файл в `~/Pictures/Screenshots/` + сразу в буфер.
 - **Буфер обмена**: cliphist, watcher'ы текста и картинок в автозапуске.
@@ -92,7 +92,7 @@ xdg-mime default thunar.desktop inode/directory
 
 ## Стекло
 
-Внешний вид стеклянных панелей Quickshell (лаунчер; дальше — бар, OSD,
+Внешний вид стеклянных панелей Quickshell (лаунчер и бар; дальше — OSD,
 уведомления, power menu) настраивается в одном файле:
 `quickshell/.config/quickshell/GlassConfig.qml`.
 
@@ -100,7 +100,8 @@ xdg-mime default thunar.desktop inode/directory
 - `glassAlpha`, `topAlpha`, `bodyAlpha`, `baseAlpha` — прозрачность заливки;
 - `specular`, `borderAlpha`, `accentAlpha` — блик, рамка и подмес цвета обоев;
 - `shadowOpacity`, `shadowBlur`, `shadowOffset` — тень под плитой;
-- `blurEnabled`, `blurRadius` — размытие фона под плитой.
+- `blurEnabled`, `blurRadius` — размытие фона под плитой;
+- `barHeight`, `barMargin`, `barRadius`, `barAlpha` — размеры и заливка бара.
 
 Размытие рисует Hyprland по протоколу `ext-background-effect-v1`: QML отдаёт
 композитору точный `Region`, поэтому размытие обрезано по силуэту плиты и не
@@ -108,6 +109,20 @@ xdg-mime default thunar.desktop inode/directory
 `modules/settings.lua`: `decoration:blur:size`, `passes`, `vibrancy`.
 
 Применение: QML — `qs kill && qs -n -d`, Hyprland — `hyprctl reload`.
+
+## Бар
+
+Верхний бар — одна стеклянная полоса на всю ширину: `PanelWindow` в слое
+`Top` с namespace `quickshell-bar`. Отступ сверху 8 px, по бокам 10 px,
+высота 40 px; сверху резервируется 48 px, поэтому окна не заезжают под бар.
+
+Слева воркспейсы 1–10, в центре часы с датой, справа раскладка us/ru,
+громкость, сеть, трей, загрузка CPU и памяти.
+
+- воркспейсы: клик — переход, колесо — соседний воркспейс;
+- раскладка: клик — следующая (`hyprctl switchxkblayout active next`);
+- громкость: клик — mute, колесо — ±2%;
+- трей: ЛКМ — активация, СКМ — вторичное действие, ПКМ — меню приложения.
 
 ## Клавиши
 
@@ -145,7 +160,7 @@ kitty/.config/kitty/      kitty.conf (include wallust-цветов)
 wallust/.config/wallust/  wallust.toml + templates/ (kitty, zsh, gtk, hypr, quickshell)
 gtk/.config/gtk-3.0/      settings.ini (gtk.css генерируется)
 zsh/.config/zsh/          wallust.zsh — подключение цветов + precmd
-quickshell/.config/quickshell/  shell.qml, GlassConfig.qml + launcher/ (QML-лаунчер)
+quickshell/.config/quickshell/  shell.qml, GlassConfig.qml + launcher/, bar/ (QML)
 scripts/.local/bin/       wal-set.sh, layout-toggle.sh, screenshot.sh, clipboard-watch.sh
 assets/                   скриншоты для README
 ```

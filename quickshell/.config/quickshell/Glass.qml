@@ -3,9 +3,8 @@ import QtQuick.Effects
 import qs
 
 // Стеклянная плита: размытие фона обеспечивает Hyprland по протоколу
-// ext-background-effect-v1 (см. Region в Launcher.qml), здесь только
-// геометрия, блик, обводка и тень. Переиспользуется баром, OSD,
-// уведомлениями и power menu.
+// ext-background-effect-v1 (см. Region в launcher/Launcher.qml и bar/Bar.qml),
+// здесь только геометрия, блик, обводка и тень.
 //
 // Все параметры по умолчанию берутся из глобальных настроек
 // GlassConfig.qml — их можно переопределить у конкретного элемента.
@@ -19,13 +18,34 @@ Item {
     property color foreground: "#e6e6e6"
     property color accent: "#7aa2f7"
 
-    // Параметры стекла, чтобы тюнить вид без правок логики.
+    // Геометрия.
     property int radius: GlassConfig.radius
+    property int borderWidth: GlassConfig.borderWidth
+
+    // Заливка.
     property real glassAlpha: GlassConfig.glassAlpha
+    property real topAlpha: GlassConfig.topAlpha
+    property real bodyAlpha: GlassConfig.bodyAlpha
+    property real baseAlpha: GlassConfig.baseAlpha
+
+    // Блик, рамка, акцент.
     property real specular: GlassConfig.specular
+    property real borderAlpha: GlassConfig.borderAlpha
+    property real accentAlpha: GlassConfig.accentAlpha
+
+    // Тень.
     property real shadowOpacity: GlassConfig.shadowOpacity
     property real shadowBlur: GlassConfig.shadowBlur
     property real shadowOffset: GlassConfig.shadowOffset
+
+    // Плоская заливка для тонких панелей (бар): вместо градиента карточки —
+    // ровный цвет фона. Блик и рамка остаются.
+    property bool flat: false
+
+    // Цвет с прозрачностью и общим множителем glassAlpha.
+    function tint(c, a) {
+        return Qt.rgba(c.r, c.g, c.b, Math.max(0, a) * glass.glassAlpha)
+    }
 
     // Мягкая тень под стеклом.
     RectangularShadow {
@@ -54,21 +74,23 @@ Item {
         antialiasing: true
 
         // Стекло: сверху светлее, к низу уходит в цвет фона.
+        // В плоском режиме все три остановки — цвет фона (бар).
         gradient: Gradient {
             GradientStop {
                 position: 0.0
-                color: Qt.rgba(glass.foreground.r, glass.foreground.g, glass.foreground.b,
-                               GlassConfig.topAlpha * glass.glassAlpha)
+                color: glass.flat
+                    ? glass.tint(glass.background, glass.baseAlpha)
+                    : glass.tint(glass.foreground, glass.topAlpha)
             }
             GradientStop {
                 position: 0.45
-                color: Qt.rgba(glass.foreground.r, glass.foreground.g, glass.foreground.b,
-                               GlassConfig.bodyAlpha * glass.glassAlpha)
+                color: glass.flat
+                    ? glass.tint(glass.background, glass.baseAlpha)
+                    : glass.tint(glass.foreground, glass.bodyAlpha)
             }
             GradientStop {
                 position: 1.0
-                color: Qt.rgba(glass.background.r, glass.background.g, glass.background.b,
-                               GlassConfig.baseAlpha * glass.glassAlpha)
+                color: glass.tint(glass.background, glass.baseAlpha)
             }
         }
 
@@ -121,16 +143,15 @@ Item {
             gradient: Gradient {
                 GradientStop {
                     position: 0.0
-                    color: Qt.rgba(glass.accent.r, glass.accent.g, glass.accent.b, 0)
+                    color: glass.tint(glass.accent, 0)
                 }
                 GradientStop {
                     position: Math.max(0, (body.height - 70) / Math.max(1, body.height))
-                    color: Qt.rgba(glass.accent.r, glass.accent.g, glass.accent.b, 0)
+                    color: glass.tint(glass.accent, 0)
                 }
                 GradientStop {
                     position: 1.0
-                    color: Qt.rgba(glass.accent.r, glass.accent.g, glass.accent.b,
-                                   GlassConfig.accentAlpha * glass.specular)
+                    color: glass.tint(glass.accent, glass.accentAlpha * glass.specular)
                 }
             }
         }
@@ -140,9 +161,9 @@ Item {
             anchors.fill: parent
             radius: body.radius
             color: "transparent"
-            border.width: GlassConfig.borderWidth
+            border.width: glass.borderWidth
             border.color: Qt.rgba(glass.foreground.r, glass.foreground.g, glass.foreground.b,
-                                  GlassConfig.borderAlpha)
+                                  glass.borderAlpha)
         }
     }
 

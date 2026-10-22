@@ -5,6 +5,10 @@
 -- QML отдаёт композитору точный Region, и Hyprland размывает только его.
 -- Так размытие не выходит за края плиты.
 --
--- Слой лаунчера: namespace "quickshell-launcher".
-
--- Дальше сюда добавятся правила для бара, OSD и уведомлений Quickshell.
+-- Слой лаунчера: namespace "quickshell-launcher" (Overlay).
+-- Слой бара:     namespace "quickshell-bar" (Top, резерв 48 px сверху).
+--
+-- Отдельных layer_rule здесь не нужно: резерв места и слой задаются
+-- из PanelWindow, а размытие приходит через протокол.
+--
+-- Дальше сюда добавятся OSD, уведомления и power menu Quickshell.
