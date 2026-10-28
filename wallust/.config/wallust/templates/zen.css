@@ -1,0 +1,11 @@
+/* wallust: палитра для Zen Browser (userChrome.css и userContent.css).
+   Не редактировать вручную — файл перезаписывается wallust.
+   Лежит в ~/.config/zen/wallust.css, профиль подключает его через @import. */
+
+:root {
+    --wall-bg: {{background}};
+    --wall-fg: {{foreground}};
+    --wall-accent: {{cursor}};
+    --wall-color4: {{color4}};
+    --wall-color8: {{color8}};
+}

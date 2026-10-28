@@ -1,6 +1,6 @@
 # wallust v3.5: палитра из кадра видео-обоев.
 # Кадр извлекается в ~/.cache/wal-set/frame.png скриптом wal-set.sh.
-# Цвета получают kitty, zsh, GTK (Thunar) и рамки Hyprland.
+# Цвета получают kitty, zsh, GTK (Thunar), рамки Hyprland, Quickshell и Zen.
 
 backend     = "fastresize"
 color_space = "salience"
@@ -15,6 +15,7 @@ zsh   = { template = 'zsh-colors.zsh',  target = '~/.config/zsh/wallust-colors.z
 gtk   = { template = 'gtk.css',         target = '~/.config/gtk-3.0/gtk.css' }
 hypr  = { template = 'colors.lua',      target = '~/.config/hypr/modules/colors.lua' }
 quickshell = { template = 'quickshell.json', target = '~/.config/quickshell/colors.json' }
+zen        = { template = 'zen.css',          target = '~/.config/zen/wallust.css' }
 
 [hooks]
 # Перечитать конфиг во всех запущенных Kitty.

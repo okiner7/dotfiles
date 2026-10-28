@@ -1,0 +1,53 @@
+/* Zen Browser: страница нового таба в палитре wallust.
+   userContent.css — сюда попадают только внутренние страницы, сайты не трогаем. */
+
+@import url("file:///home/vinio666/.config/zen/wallust.css");
+
+@-moz-document url("chrome://browser/content/blanktab.html"), url-prefix("about:newtab"), url-prefix("about:home") {
+    :root {
+        color-scheme: dark !important;
+
+        --background-color-canvas: var(--wall-bg) !important;
+        --text-color: var(--wall-fg) !important;
+        --card-background-color: color-mix(in srgb, var(--wall-fg) 6%, var(--wall-bg) 94%) !important;
+
+        --newtab-background-color: var(--wall-bg) !important;
+        --newtab-background-color-secondary: color-mix(in srgb, var(--wall-fg) 6%, var(--wall-bg) 94%) !important;
+        --newtab-text-primary-color: var(--wall-fg) !important;
+        --newtab-text-secondary-color: color-mix(in srgb, var(--wall-fg) 70%, var(--wall-bg) 30%) !important;
+        --newtab-primary-action-background: var(--wall-accent) !important;
+        --newtab-border-color: color-mix(in srgb, var(--wall-fg) 14%, transparent) !important;
+        --newtab-element-hover-color: color-mix(in srgb, var(--wall-accent) 18%, var(--wall-bg) 82%) !important;
+        --newtab-element-active-color: color-mix(in srgb, var(--wall-accent) 26%, var(--wall-bg) 74%) !important;
+    }
+
+    html,
+    body,
+    #root,
+    .outer-wrapper {
+        background-color: var(--wall-bg) !important;
+        color: var(--wall-fg) !important;
+    }
+
+    /* Строка поиска — shadow DOM, поэтому красим переменные на её хосте. */
+    .search-wrapper content-search-handoff-ui {
+        --content-search-handoff-ui-background-color: color-mix(in srgb, var(--wall-fg) 7%, var(--wall-bg) 93%) !important;
+        --content-search-handoff-ui-color: var(--wall-fg) !important;
+        --content-search-handoff-ui-fill: color-mix(in srgb, var(--wall-fg) 70%, var(--wall-bg) 30%) !important;
+        --content-search-handoff-ui-caret-color: var(--wall-accent) !important;
+        --content-search-handoff-ui-unfocused-border-color: color-mix(in srgb, var(--wall-fg) 14%, transparent) !important;
+        --content-search-handoff-ui-fakefocus-border-color: var(--wall-accent) !important;
+        --content-search-handoff-ui-fakefocus-box-shadow-inner: color-mix(in srgb, var(--wall-accent) 28%, transparent) !important;
+        --content-search-handoff-ui-fakefocus-box-shadow-outer: color-mix(in srgb, var(--wall-accent) 18%, transparent) !important;
+    }
+}
+
+/* Новый таб Zen открывается как about:blank; красим его отдельно. */
+@-moz-document url("about:blank") {
+    :root,
+    html,
+    body {
+        background-color: var(--wall-bg) !important;
+        color: var(--wall-fg) !important;
+    }
+}

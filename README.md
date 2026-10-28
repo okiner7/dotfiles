@@ -2,7 +2,8 @@
 
 Компактный rice для Hyprland 0.55+ (проверено на 0.56.2): модульный Lua-конфиг,
 видео-обои через mpvpaper, динамическая палитра из обоев через wallust
-(kitty / zsh / Thunar / рамки Hyprland), cliphist, скриншоты grim+slurp, Thunar.
+(kitty / zsh / Thunar / рамки Hyprland / Zen Browser), cliphist, скриншоты
+grim+slurp, Thunar.
 
 ## Что внутри
 
@@ -17,6 +18,10 @@
   - zsh (цвета в `~/.config/zsh/wallust-colors.zsh`, промпт в `prompt.zsh`)
   - GTK/Thunar (`~/.config/gtk-3.0/gtk.css`)
   - рамки Hyprland (`~/.config/hypr/modules/colors.lua`)
+  - Zen Browser (`~/.config/zen/wallust.css`)
+- **Zen Browser**: интерфейс (сайдбар, вкладки, адресная строка, меню, новый
+  таб) в палитре wallust через `userChrome.css`/`userContent.css`; сайты не
+  перекрашиваются. После смены обоев браузер нужно перезапустить.
 - **Quickshell**: бар и лаунчер на QML, цвета из палитры wallust, `SUPER+R`.
   Дальше на нём же планируются OSD, уведомления и power menu.
 - **Скриншоты**: `Print` — область, `SUPER+Print` — весь экран;
@@ -39,7 +44,7 @@ sudo pacman -S hyprland kitty mpv ffmpeg python wl-clipboard cliphist \
     thunar gvfs tumbler grim slurp quickshell
 ```
 
-Из AUR: `mpvpaper`, `wallust`.
+Из AUR: `mpvpaper`, `wallust`, `zen-browser-bin` (или официальный установщик Zen).
 
 Опционально:
 
@@ -58,9 +63,12 @@ cd ~/dotfiles
 
 `install.sh` делает по одному симлинку на файл в `$HOME`, живые файлы не затирает
 (уводит в `*.bak.<дата>`), выдаёт `+x` скриптам, ставит zsh-плагины
-автодополнения и проверяет зависимости.
-Генерируемые файлы (`colors.lua`, `gtk.css`, `wallust.conf`, `wallust-colors.zsh`)
-не линкуются — их создаёт wallust.
+автодополнения и проверяет зависимости. Для Zen скрипт находит профиль в
+`~/.config/zen/profiles.ini` и линкует `userChrome.css`, `userContent.css` и
+`user.js`; стили включает преф
+`toolkit.legacyUserProfileCustomizations.stylesheets`.
+Генерируемые файлы (`colors.lua`, `gtk.css`, `wallust.conf`, `wallust-colors.zsh`,
+`~/.config/zen/wallust.css`) не линкуются — их создаёт wallust.
 
 Дополнительно:
 
@@ -86,7 +94,10 @@ xdg-mime default thunar.desktop inode/directory
   и код ошибки последней команды.
 - Переопределения: `WALLPAPER_FILE=/путь/файл` (конкретный файл),
   `WALLPAPER_DIR=/путь/папка` (другая папка).
-- Настройки палитры: `~/.config/wallust/wallust.toml`, шаблоны в `templates/`.
+- Zen: палитра для браузера пишется в `~/.config/zen/wallust.css`; после смены
+  обоев перезапусти Zen.
+- Настройки палитры: `~/.config/wallust/wallust.toml`, шаблоны в `templates/`
+  (kitty, zsh, gtk, hypr, quickshell, zen).
 - Цвета рамок генерируются в `modules/colors.lua`; если файла нет —
   `settings.lua` использует дефолтный градиент.
 
@@ -124,6 +135,34 @@ xdg-mime default thunar.desktop inode/directory
 - громкость: клик — mute, колесо — ±2%;
 - трей: ЛКМ — активация, СКМ — вторичное действие, ПКМ — меню приложения.
 
+## Zen Browser
+
+Оформление Zen — `userChrome.css` и `userContent.css` из `zen/profile/`; их
+линкует `install.sh` в найденный профиль `~/.config/zen/<профиль>/`. Палитра
+лежит в `~/.config/zen/wallust.css` (шаблон
+`wallust/.config/wallust/templates/zen.css`); wallust перезаписывает её при
+смене обоев.
+
+- красятся сайдбар, вкладки и выбранная вкладка, адресная строка, меню,
+  компактный тулбар и фон нового таба;
+- `userContent.css` ограничен `about:blank`, `about:newtab` и `about:home`,
+  поэтому обычные сайты остаются со своими цветами;
+- после смены обоев (`SUPER+SHIFT+W`) перезапусти Zen — палитра читается при
+  старте.
+
+Перезапуск:
+
+```bash
+pkill -x zen-bin
+setsid zen-bin >/dev/null 2>&1 &
+```
+
+Если `zen-bin` не в `PATH`, запусти свой бинарник, например
+`/opt/zen-browser-bin/zen-bin`.
+
+Путь к палитре в `@import` абсолютный (`~/.config/zen/wallust.css`); при
+переносе репы на другого пользователя поправь его в обоих CSS-файлах.
+
 ## Клавиши
 
 | Клавиши | Действие |
@@ -157,10 +196,11 @@ xdg-mime default thunar.desktop inode/directory
 ```
 hypr/.config/hypr/        конфиг Hyprland (hyprland.lua + modules/)
 kitty/.config/kitty/      kitty.conf (include wallust-цветов)
-wallust/.config/wallust/  wallust.toml + templates/ (kitty, zsh, gtk, hypr, quickshell)
+wallust/.config/wallust/  wallust.toml + templates/ (kitty, zsh, gtk, hypr, quickshell, zen)
 gtk/.config/gtk-3.0/      settings.ini (gtk.css генерируется)
 zsh/.config/zsh/          wallust.zsh — подключение цветов + precmd
 quickshell/.config/quickshell/  shell.qml, GlassConfig.qml + launcher/, bar/ (QML)
+zen/profile/              userChrome.css, userContent.css, user.js
 scripts/.local/bin/       wal-set.sh, layout-toggle.sh, screenshot.sh, clipboard-watch.sh
 assets/                   скриншоты для README
 ```

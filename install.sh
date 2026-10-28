@@ -54,6 +54,44 @@ for pkg in "${PACKAGES[@]}"; do
     done < <(find "$REPO_DIR/$pkg" -type f -print0)
 done
 
+# Zen Browser: userChrome.css, userContent.css и user.js кладутся в профиль,
+# имя которого случайное, поэтому обычные симлинки из ~/.config/zen не подходят.
+ZEN_DIR="$HOME/.config/zen"
+if [[ -f "$ZEN_DIR/profiles.ini" ]]; then
+    ZEN_PROFILE="$(awk -F= '
+        /^\[Install/ { in_install = 1; next }
+        /^\[/ { in_install = 0 }
+        in_install && $1 == "Default" {
+            sub(/^[^=]*=/, "")
+            sub(/[ \t]+$/, "")
+            print
+            exit
+        }
+    ' "$ZEN_DIR/profiles.ini")"
+    if [[ -n "$ZEN_PROFILE" && -d "$ZEN_DIR/$ZEN_PROFILE" ]]; then
+        ZEN_CHROME="$ZEN_DIR/$ZEN_PROFILE/chrome"
+        mkdir -p "$ZEN_CHROME"
+        for pair in \
+            "$REPO_DIR/zen/profile/chrome/userChrome.css:$ZEN_CHROME/userChrome.css" \
+            "$REPO_DIR/zen/profile/chrome/userContent.css:$ZEN_CHROME/userContent.css" \
+            "$REPO_DIR/zen/profile/user.js:$ZEN_DIR/$ZEN_PROFILE/user.js"; do
+            src="${pair%%:*}"
+            dst="${pair#*:}"
+            if [[ -e "$dst" && ! -L "$dst" ]]; then
+                mv "$dst" "$dst.bak.$STAMP"
+                info "бэкап: ~/${dst#"$HOME"/} -> .bak.$STAMP"
+            fi
+            ln -sfn "$src" "$dst"
+            info "линк:  ~/${dst#"$HOME"/}"
+        done
+        info "Zen: профиль $ZEN_PROFILE"
+    else
+        info "Zen: профиль не найден, пропуск"
+    fi
+else
+    info "Zen: ~/.config/zen не найден, пропуск"
+fi
+
 # zsh-плагины автодополнения: в custom/plugins, без пакетов и sudo.
 if [[ -d "$HOME/.oh-my-zsh" ]]; then
     OMZ_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
